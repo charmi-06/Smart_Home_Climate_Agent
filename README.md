@@ -54,6 +54,10 @@ The agent follows the standard **Goal-Based Agent** architecture (Russell & Norv
                    +---------------------+
 ```
 
+
+https://github.com/user-attachments/assets/72906578-640c-4616-bc22-da6b37bae684
+
+
 ### Key Components
 - **Percepts**: Current Room Temp ($T_{room}$), Target Goal Setpoint ($T_{target}$), Outdoor Ambient Temp ($T_{ambient}$), Room Occupants.
 - **Internal State**: Recent temperature trends ($\frac{dT}{dt}$), active HVAC state (`OFF`, `COOLING`, `HEATING`), switching count, accumulated energy ($kWh$).
