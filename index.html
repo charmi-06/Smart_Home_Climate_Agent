@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Home Climate Agent - Intelligent Goal-Based Temperature Control</title>
+  <meta name="description" content="Interactive visual simulation of a goal-based intelligent agent for smart home temperature and climate control with thermal physics and hysteresis optimization.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-icon">🌡️</div>
+      <div class="brand-title">
+        <h1>Smart Home Climate Agent</h1>
+        <p>Goal-Based Agent Architecture & Thermal Physics Simulation</p>
+      </div>
+    </div>
+    <div class="header-status">
+      <div class="status-badge" id="agentStatusBadge">
+        <span class="status-dot"></span>
+        <span id="agentStatusText">Goal-Based Agent Active</span>
+      </div>
+      <button class="btn-action" id="simPlayPauseBtn">
+        <span id="simPlayIcon">⏸️</span> <span id="simPlayText">Pause</span>
+      </button>
+      <button class="btn-action" id="simResetBtn" style="background: rgba(255,255,255,0.1);">
+        🔄 Reset
+      </button>
+    </div>
+  </header>
+
+  <!-- Metrics Banner -->
+  <section class="metrics-grid" aria-label="Key Simulation Metrics">
+    <div class="metric-card">
+      <div class="metric-label">Room Temperature</div>
+      <div class="metric-value" id="valRoomTemp">28.0 <span class="metric-unit">°C</span></div>
+      <div class="metric-sub" id="subTempTrend">Stable</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Target Goal Setpoint</div>
+      <div class="metric-value" id="valTargetTemp">22.0 <span class="metric-unit">°C</span></div>
+      <div class="metric-sub" id="subGoalTolerance">Tolerance: ±0.5°C</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Outdoor Ambient</div>
+      <div class="metric-value" id="valAmbientTemp">34.0 <span class="metric-unit">°C</span></div>
+      <div class="metric-sub" id="subWeatherState">Sunny Afternoon</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">HVAC Actuator State</div>
+      <div class="metric-value" id="valHVACState" style="color: var(--accent-cyan);">OFF</div>
+      <div class="metric-sub" id="valHVACPower">Compressor Power: 0%</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Energy Consumed</div>
+      <div class="metric-value" id="valEnergy">0.00 <span class="metric-unit">kWh</span></div>
+      <div class="metric-sub" id="valCycles">AC Switches: 0</div>
+    </div>
+  </section>
+
+  <!-- Main Dashboard Grid -->
+  <main class="dashboard-grid">
+
+    <!-- Left Column: Controls Panel -->
+    <aside class="panel" aria-label="Simulation Controls">
+      <div class="panel-header">
+        <div class="panel-title">⚙️ Agent & Control Parameters</div>
+      </div>
+
+      <!-- Agent Type Selector -->
+      <div class="control-group">
+        <label class="control-label">Agent Architecture</label>
+        <div class="btn-group">
+          <button class="btn-toggle active" id="btnAgentGoal" onclick="setAgentType('goal')">Goal-Based</button>
+          <button class="btn-toggle" id="btnAgentReflex" onclick="setAgentType('reflex')">Simple Reflex</button>
+        </div>
+      </div>
+
+      <!-- Goal Setpoint Slider -->
+      <div class="control-group">
+        <label class="control-label" for="sliderTargetTemp">
+          Target Goal Setpoint: <span class="control-val" id="dispTargetTemp">22.0°C</span>
+        </label>
+        <input type="range" class="slider" id="sliderTargetTemp" min="16" max="28" step="0.5" value="22">
+      </div>
+
+      <!-- Goal Mode (Comfort vs Eco) -->
+      <div class="control-group" id="goalModeGroup">
+        <label class="control-label">Goal Hysteresis Mode</label>
+        <div class="btn-group">
+          <button class="btn-toggle active" id="btnModeComfort" onclick="setGoalMode('comfort')">Comfort (±0.5°)</button>
+          <button class="btn-toggle" id="btnModeEco" onclick="setGoalMode('eco')">Eco (±1.2°)</button>
+        </div>
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid var(--bg-card-border);">
+
+      <!-- Environment Controls -->
+      <div class="panel-title">☀️ Environmental Conditions</div>
+
+      <!-- Outdoor Temp Slider -->
+      <div class="control-group">
+        <label class="control-label" for="sliderAmbientTemp">
+          Outdoor Ambient Temp: <span class="control-val" id="dispAmbientTemp">34.0°C</span>
+        </label>
+        <input type="range" class="slider" id="sliderAmbientTemp" min="5" max="45" step="1" value="34">
+      </div>
+
+      <!-- Occupant Heat Load Slider -->
+      <div class="control-group">
+        <label class="control-label" for="sliderOccupants">
+          Room Occupants (Heat Load): <span class="control-val" id="dispOccupants">2 Persons</span>
+        </label>
+        <input type="range" class="slider" id="sliderOccupants" min="0" max="6" step="1" value="2">
+      </div>
+
+      <!-- Window Insulation Toggle -->
+      <div class="control-group">
+        <label class="control-label" for="chkWindowOpen">
+          Window Open (High Draft):
+        </label>
+        <div class="btn-group">
+          <button class="btn-toggle active" id="btnWindowClosed" onclick="setWindowOpen(false)">Closed (Insulated)</button>
+          <button class="btn-toggle" id="btnWindowOpen" onclick="setWindowOpen(true)">Open (Heat Draft)</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Center Column: Visual Room Simulation & Real-Time Chart -->
+    <section class="simulation-container" aria-label="Visual Room Simulation and Dynamic Graph">
+      
+      <!-- Visual Smart Room Canvas -->
+      <div class="room-visual-wrapper">
+        <canvas id="roomCanvas"></canvas>
+      </div>
+
+      <!-- Dynamic Timeline Chart Canvas -->
+      <div class="chart-wrapper">
+        <div class="panel-header" style="border: none; padding-bottom: 0;">
+          <div class="panel-title">📈 Real-Time Temperature History & Hysteresis Bounds</div>
+          <span style="font-size: 0.775rem; color: var(--text-muted);">Goal Range Shaded in Green</span>
+        </div>
+        <canvas id="chartCanvas"></canvas>
+      </div>
+
+    </section>
+
+    <!-- Right Column: Agent Reasoning State & Log -->
+    <aside class="panel" aria-label="Agent Perception Loop and Logs">
+      <div class="panel-header">
+        <div class="panel-title">🧠 Agent Perception & Decision Loop</div>
+      </div>
+
+      <!-- Agent Architecture Pipeline -->
+      <div class="cognitive-card">
+        <div class="cognitive-step">
+          <span class="step-number">1</span>
+          <span><strong>Perceive Sensors:</strong> Thermometer reading <span id="cogSensorVal" style="color: var(--accent-cyan)">28.0°C</span></span>
+        </div>
+        <div class="cognitive-step">
+          <span class="step-number">2</span>
+          <span><strong>State Estimation:</strong> Trend <span id="cogTrendVal">Stable</span></span>
+        </div>
+        <div class="cognitive-step">
+          <span class="step-number">3</span>
+          <span><strong>Goal Evaluation:</strong> Target range <span id="cogGoalBand" style="color: var(--accent-emerald)">[21.5°C - 22.5°C]</span></span>
+        </div>
+        <div class="cognitive-step">
+          <span class="step-number">4</span>
+          <span><strong>Action Selection:</strong> Command HVAC to <strong id="cogActionVal" style="color: var(--accent-cyan)">OFF</strong></span>
+        </div>
+      </div>
+
+      <!-- Agent Rationale Card -->
+      <div class="panel-title" style="margin-top: 4px;">💬 Agent Rationale</div>
+      <div class="rationale-text" id="rationaleBox">
+        Initial state established. Agent monitoring room temperature.
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid var(--bg-card-border);">
+
+      <!-- Execution Log -->
+      <div class="panel-header">
+        <div class="panel-title">📋 Execution Log</div>
+      </div>
+      <div class="log-console" id="logConsole">
+        <div class="log-entry">
+          <span class="log-time">00:00</span>
+          <span class="log-badge off">SYSTEM</span>
+          <span>Smart Home Climate Agent Initialized.</span>
+        </div>
+      </div>
+    </aside>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
